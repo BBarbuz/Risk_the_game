@@ -1,10 +1,9 @@
 class Players:
-    def __init__(self, __id, __name, __lvl, recruit, ):
+    def __init__(self, __id, __name, __lvl, recruit ):
         self.__name = __name            # player name
         self.__lvl = __lvl              # player level
         self.__id = __id                # player personal ID
         self.recruit = recruit
-        self.alive = alive
 
     def get_player_name(self):
         return self.__name          # name getter
