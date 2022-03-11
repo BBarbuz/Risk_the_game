@@ -16,7 +16,7 @@ def show_terr(terr):
 def player_terr(gam):
     for j in terr_objects:
         if j.get_terr_own() == gam.get_player_id():
-            print(f'{j.id_terr}\t', j.name_terr)
+            print(f'{j.id_terr}\t', f'{j.name_terr}\t', j.force)
 
 
 def free_terr():
@@ -43,6 +43,15 @@ def attack(gam, to_where, from_where, units):
         print(f'{units} vs. {defender_units}', end='\r')
         os.system('sleep 1')
 
+    if units > defender_units:
+        print(f'\n{attacker_name} wygrałeś i zająłeś {terr_objects[to_where].name_terr}, masz tam {units} jednostek')
+        terr_objects[to_where].terr_own = gam.get_player_id()
+        terr_objects[to_where].force = units
+    else:
+        print(f'\n{attacker_name} przegrałeś i {terr_objects[to_where].name_terr} nadal należy do {defender_name} '
+              f'posiada tam {defender_units} jednostek')
+        terr_objects[to_where].force = defender_units
+
 
 def dislocation(gam):
     show_terr(terr_names)
@@ -55,12 +64,14 @@ def dislocation(gam):
     od = 'n'
     while od == 'n' or od == 'N':
         to_where = int(input('\nGdzie idziesz: '))
+        print(f'to_where: {to_where}')
         if terr_objects[to_where].terr_own == -1:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, terytorium jest neutralne')
             od = input('Potwierdzasz przemieszczenie? (T/N): ')
         else:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, '
                   f'terytorium jest zajęte przez gracza {gamer[terr_objects[to_where].terr_own].get_player_name()}')
+            print(f'to_where: {to_where}')
             print(f'Posiada na nim {terr_objects[to_where].force} jednostek')
             od = input('Potwierdzasz wojnę? (T/N): ')
 
@@ -77,12 +88,13 @@ def dislocation(gam):
         player_terr(gam)
 
     else:
+        terr_objects[from_where].set_force(-units)
         attack(gam, to_where, from_where, units)
 
 
 def recruitment(gam):
-    if gam.get_player_recruit() == 0:
-        print('Nie możesz się rekruować! Poczekaj jedną kolejkę.')
+    if gam.recruit == 1:
+        print('\nNie możesz się rekruować! Poczekaj jedną kolejkę.')
         move(gam)
     else:
         recruit_force = random.randrange(1, 6+1)
@@ -90,11 +102,14 @@ def recruitment(gam):
         print('Twoje terytoria: ')
         player_terr(gam)
         choice = int(input('Wybór: '))
-        terr_objects[choice].set_force(recruit_force)
+        terr_objects[choice].set_force(recruit_force) # this function adding forces
         print(f'Twoje jednostki na {terr_names[choice]}: {terr_objects[choice].force}')
 
-        if gam.get_player_recruit() == 1:
+        if gam.get_player_recruit() == 2:
             gam.recruit = 0
+
+        print('\nTwoje terytoria: ')
+        player_terr(gam)
         # print('Wolne terytoria (nie koniecznie z połączeniem):')
         # free_terr(gam)
 
@@ -114,8 +129,8 @@ def move(gam):                # During working on the main loop this is main men
     else:
         pass
 
-    if gam.get_player_recruit() == 0:
-        gam.recruit = 1
+    if gam.recruit < 2:
+    gam.recruit += 1
 
 
 print('-' * 24)
@@ -136,7 +151,7 @@ gamer = []
 for i in range(0, players_count):           # adding players on the beginning
     print(f'Gracz ID_{i}')
     name = input('Imie gracza: ')
-    gamer.append(player.Players(i, name, 1, 1))
+    gamer.append(player.Players(i, name, 1, 2))
     print('')
 
 print('Losowanie kolejki...\n')
