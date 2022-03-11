@@ -4,13 +4,20 @@ import random
 import os
 
 
-def show_terr(terr):
+def is_alive(gam):
+    count = 0
+    for j in terr_objects:
+        if j.get_terr_own() == gam.get_player_id():
+            count += 1
+    if count == 0:
+        return False
+    else:
+        return True
+
+
+def show_terr():
     print('')
-    counter = 0
-    print(f'\nID\tNazwa\n')
-    for j in terr:
-        print(counter, '\t', j)
-        counter += 1
+    os.system('cat ./territores_names_num | column -c 100')
 
 
 def player_terr(gam):
@@ -19,7 +26,7 @@ def player_terr(gam):
             print(f'{j.id_terr}\t', f'{j.name_terr}\t\t', j.force, end='')
             if j.force == 1:
                 print(' jednostka')
-            elif j.force == 0:
+            elif j.force == 0 or j.force >= 5:
                 print(' jednostek')
             else:
                 print(' jednostki')
@@ -31,13 +38,13 @@ def free_terr():
             print(f'{j.id_terr}\t', j.name_terr)
 
 
-def attack(gam, to_where, from_where, units):
+def attack(gam, to_where, units):
     defender_units = terr_objects[to_where].force
     defender_name = gamer[terr_objects[to_where].terr_own].get_player_name()
     attacker_name = gam.get_player_name()
-    print(f'------{terr_objects[to_where].name_terr}------')
+    print(f'\n------{terr_objects[to_where].name_terr}------')
     print(f'\n{attacker_name} vs. {defender_name}')
-    print(f'{units} vs. {defender_units}', end='\r')
+    print(f'\t{units} vs. {defender_units}', ' '*5, end='\r')
     os.system('sleep 1')
 
     while units > 0 and defender_units > 0:
@@ -46,7 +53,7 @@ def attack(gam, to_where, from_where, units):
         else:
             units -= 1
 
-        print(f'{units} vs. {defender_units}', end='\r')
+        print(f'\t{units} vs. {defender_units}', ' '*5, end='\r')
         os.system('sleep 1')
 
     if units > defender_units:
@@ -60,42 +67,54 @@ def attack(gam, to_where, from_where, units):
 
 
 def dislocation(gam):
-    show_terr(terr_names)
+    show_terr()
     print('\n---Przemieszczanie wojsk / atak---')
     print('\nTwoje terytoria: ')
     player_terr(gam)
-    from_where = int(input('\nSkąd chcesz przejść: '))
 
+    from_where = -1
     to_where = -1
+    units = 20
     od = 'n'
     while od == 'n' or od == 'N':
+        units = 20
+        from_where = int(input('\nSkąd chcesz przejść: '))
         to_where = int(input('\nGdzie idziesz: '))
-        print(f'to_where: {to_where}')
         if terr_objects[to_where].terr_own == -1:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, terytorium jest neutralne')
+            units = dislocation_helper(units, from_where)
             od = input('Potwierdzasz przemieszczenie? (T/N): ')
+
+        elif terr_objects[to_where].terr_own == gam.get_player_id():
+            print(f'Wybierasz {terr_objects[to_where].name_terr}, twoje terytorium')
         else:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, '
                   f'terytorium jest zajęte przez gracza {gamer[terr_objects[to_where].terr_own].get_player_name()}')
-            print(f'to_where: {to_where}')
             print(f'Posiada na nim {terr_objects[to_where].force} jednostek')
+            units = dislocation_helper(units, from_where)
             od = input('Potwierdzasz wojnę? (T/N): ')
 
-    units = 1000
-    while units > terr_objects[from_where].force:
-        units = int(input(f'Ile jednostek chcesz użyć, (dostępnych {terr_objects[from_where].force}): '))
-
-    if terr_objects[to_where].terr_own == -1:
+    if terr_objects[to_where].terr_own == -1:   # neutral territory
         terr_objects[to_where].force = units
         terr_objects[from_where].force -= units
         terr_objects[to_where].terr_own = gam.get_player_id()
 
-        print('\nTwoje terytoria: ')
-        player_terr(gam)
+    elif terr_objects[to_where].terr_own == gam.get_player_id():    # gamer territory, force relocation
+        terr_objects[to_where].force = units
+        terr_objects[from_where].force -= units
 
     else:
         terr_objects[from_where].set_force(-units)
-        attack(gam, to_where, from_where, units)
+        attack(gam, to_where, units)
+
+    if terr_objects[from_where].force == 0:
+        terr_objects[from_where].terr_own = -1
+
+
+def dislocation_helper(units, from_where):
+    while units > terr_objects[from_where].force:
+        units = int(input(f'Ile jednostek chcesz użyć, (dostępnych {terr_objects[from_where].force}): '))
+    return units
 
 
 def recruitment(gam):
@@ -113,11 +132,6 @@ def recruitment(gam):
 
         if gam.get_player_recruit() == 2:
             gam.recruit = 0
-
-        print('\nTwoje terytoria: ')
-        player_terr(gam)
-        # print('Wolne terytoria (nie koniecznie z połączeniem):')
-        # free_terr(gam)
 
 
 def move(gam):                # During working on the main loop this is main menu
@@ -139,6 +153,7 @@ def move(gam):                # During working on the main loop this is main men
         gam.recruit += 1
 
 
+os.system('clear')
 print('-' * 24)
 print('     RISK THE GAME       ')
 print('-' * 24, '\n')
@@ -161,7 +176,7 @@ for i in range(0, players_count):           # adding players on the beginning
     print('')
 
 print('Losowanie kolejki...\n')
-# os.system('sleep 3')
+os.system('sleep 2')
 random.shuffle(gamer)
 
 
@@ -181,8 +196,8 @@ with open('territores_names', 'r') as f_terr:   # upload terr_names from file
         terr_names.append(line[:-1])
 
 print('\nGenerowanie mapy...\n')
-# os.system('sleep 3')
-show_terr(terr_names)
+os.system('sleep 2')
+show_terr()
 
 count_terr = len(terr_names)
 
@@ -208,6 +223,7 @@ for i in range(0, players_count):
 
 
 game_round = 1
+os.system('clear')
 
 """
 
@@ -216,11 +232,15 @@ Main loop for this game. After setting beginning stuffs all game is inside this 
 """
 print('')
 while True:
-    print('\n', '-' * 8, f'Round {game_round}', '-' * 8)
+    print('\n', '-' * 8, f'Runda {game_round}', '-' * 8)
     for i in range(0, players_count):
-        print('\n', '-' * 25)
-        move(gamer[i])
-        # os.system('clear')
+        if is_alive(gamer[i]) is True:
+            print('\n', '-' * 25)
+            move(gamer[i])
+
+            print('\nTwoje terytoria: ')
+            player_terr(gamer[i])
+            input('\n\t<Kliknij Enter aby iść dalej>')
+            os.system('clear')
 
     game_round += 1
-    # os.system('clear')
