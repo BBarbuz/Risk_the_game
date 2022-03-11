@@ -102,7 +102,7 @@ def recruitment(gam):
         print('Twoje terytoria: ')
         player_terr(gam)
         choice = int(input('Wybór: '))
-        terr_objects[choice].set_force(recruit_force) # this function adding forces
+        terr_objects[choice].set_force(recruit_force)   # this function adding forces
         print(f'Twoje jednostki na {terr_names[choice]}: {terr_objects[choice].force}')
 
         if gam.get_player_recruit() == 2:
@@ -130,7 +130,7 @@ def move(gam):                # During working on the main loop this is main men
         pass
 
     if gam.recruit < 2:
-    gam.recruit += 1
+        gam.recruit += 1
 
 
 print('-' * 24)
