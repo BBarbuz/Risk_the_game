@@ -16,7 +16,13 @@ def show_terr(terr):
 def player_terr(gam):
     for j in terr_objects:
         if j.get_terr_own() == gam.get_player_id():
-            print(f'{j.id_terr}\t', f'{j.name_terr}\t', j.force)
+            print(f'{j.id_terr}\t', f'{j.name_terr}\t\t', j.force, end='')
+            if j.force == 1:
+                print(' jednostka')
+            elif j.force == 0:
+                print(' jednostek')
+            else:
+                print(' jednostki')
 
 
 def free_terr():
