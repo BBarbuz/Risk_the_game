@@ -72,48 +72,69 @@ def dislocation(gam):
     print('\nTwoje terytoria: ')
     player_terr(gam)
 
-    from_where = -1
     to_where = -1
     units = 20
     od = 'n'
     while od == 'n' or od == 'N':
-        units = 20
-        from_where = int(input('\nSkąd chcesz przejść: '))
+        units = 0
+        from_where = input('\nSkąd chcesz przejść: ')
+        from_where_check = from_where.strip().split(' ')
+
         to_where = int(input('\nGdzie idziesz: '))
+        print(terr_objects[to_where].terr_own)
         if terr_objects[to_where].terr_own == -1:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, terytorium jest neutralne')
-            units = dislocation_helper(units, from_where)
+
             od = input('Potwierdzasz przemieszczenie? (T/N): ')
+            if not (od == 'n' or od == 'N'):
+                for where in from_where_check:
+                    where = int(where)
+                    units += dislocation_force_getter(where)
 
         elif terr_objects[to_where].terr_own == gam.get_player_id():
             print(f'Wybierasz {terr_objects[to_where].name_terr}, twoje terytorium')
+
+            od = input('Potwierdzasz przemieszczenie? (T/N): ')
+            if not (od == 'n' or od == 'N'):
+                for where in from_where_check:
+                    where = int(where)
+                    units += dislocation_force_getter(where)
+
         else:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, '
                   f'terytorium jest zajęte przez gracza {gamer[terr_objects[to_where].terr_own].get_player_name()}')
             print(f'Posiada na nim {terr_objects[to_where].force} jednostek')
-            units = dislocation_helper(units, from_where)
+
             od = input('Potwierdzasz wojnę? (T/N): ')
+
+            if not (od == 'n' or od == 'N'):
+                for where in from_where_check:
+                    where = int(where)
+                    units += dislocation_force_getter(where)
 
     if terr_objects[to_where].terr_own == -1:   # neutral territory
         terr_objects[to_where].force = units
-        terr_objects[from_where].force -= units
         terr_objects[to_where].terr_own = gam.get_player_id()
 
     elif terr_objects[to_where].terr_own == gam.get_player_id():    # gamer territory, force relocation
         terr_objects[to_where].force = units
-        terr_objects[from_where].force -= units
 
     else:
-        terr_objects[from_where].set_force(-units)
         attack(gam, to_where, units)
 
-    if terr_objects[from_where].force == 0:
-        terr_objects[from_where].terr_own = -1
+    print(terr_objects[to_where].terr_own)
 
 
-def dislocation_helper(units, from_where):
-    while units > terr_objects[from_where].force:
-        units = int(input(f'Ile jednostek chcesz użyć, (dostępnych {terr_objects[from_where].force}): '))
+def dislocation_force_getter(fr_where):
+    units = 20
+    while units > terr_objects[fr_where].force:
+        units = int(input(f'\nIle jednostek chcesz użyć z {terr_objects[fr_where].name_terr}'
+                          f' (dostępnych {terr_objects[fr_where].force}): '))
+
+    terr_objects[fr_where].force -= units
+    if terr_objects[fr_where].force == 0:
+        terr_objects[fr_where].terr_own = -1
+
     return units
 
 
