@@ -32,6 +32,25 @@ def player_terr(gam):
                 print(' jednostki')
 
 
+def player_terr_counter(gam):
+    counter = 0
+    for j in terr_objects:
+        if j.get_terr_own() == gam.get_player_id():
+            counter += 1
+    return counter
+
+
+def player_level(terr_count):
+    if terr_count < 5:
+        return 0
+    elif 5 < terr_count < 8:
+        return 1
+    elif 8 < terr_count < 12:
+        return 2
+    else:
+        return 3
+
+
 def free_terr():
     for j in terr_objects:
         if j.get_terr_own() == -1:
@@ -143,7 +162,7 @@ def recruitment(gam):
         print('\nNie możesz się rekruować! Poczekaj jedną kolejkę.')
         move(gam)
     else:
-        recruit_force = random.randrange(1, 6+1)
+        recruit_force = random.randrange(1, 6+1 + int(gam.get_player_level()))
         print(f'Zrekrutowałeś {recruit_force} jednostek, gdzie chcesz je ulokowac?')
         print('Twoje terytoria: ')
         player_terr(gam)
@@ -264,6 +283,7 @@ while True:
     print('\n', '-' * 8, f'Runda {game_round}', '-' * 8)
     for i in range(0, players_count):
         if is_alive(gamer[i]) is True:
+            gamer[i].set_player_level(player_level(player_terr_counter(gamer[i])))
             print('\n', '-' * 25)
             move(gamer[i])
 

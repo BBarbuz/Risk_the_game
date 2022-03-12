@@ -14,6 +14,9 @@ class Players:
     def get_player_level(self):
         return self.__lvl           # level getter
 
+    def set_player_level(self, __lvl):
+        self.__lvl = __lvl          # level setter
+
     def get_player_id(self):
         return self.__id           # id getter
 
