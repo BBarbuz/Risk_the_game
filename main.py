@@ -147,9 +147,17 @@ def recruitment(gam):
         print(f'Zrekrutowałeś {recruit_force} jednostek, gdzie chcesz je ulokowac?')
         print('Twoje terytoria: ')
         player_terr(gam)
-        choice = int(input('Wybór: '))
-        terr_objects[choice].set_force(recruit_force)   # this function adding forces
-        print(f'Twoje jednostki na {terr_names[choice]}: {terr_objects[choice].force}')
+        choice = input('Wybór: ')
+        choice = choice.strip().split(' ')
+
+        if len(choice) > 1:
+            for c in choice:
+                c = int(c)
+                unit = int(input(f'\nIle jednostek chcesz ulokować w {terr_names[c]} (dostępne {recruit_force}): '))
+                terr_objects[c].set_force(unit)   # this function adding forces
+                recruit_force -= unit
+        else:
+            terr_objects[int(choice[0])].set_force(recruit_force)
 
         if gam.get_player_recruit() == 2:
             gam.recruit = 0
