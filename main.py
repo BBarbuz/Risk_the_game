@@ -100,7 +100,6 @@ def dislocation(gam):
         from_where_check = from_where.strip().split(' ')
 
         to_where = int(input('\nGdzie idziesz: '))
-        print(terr_objects[to_where].terr_own)
         if terr_objects[to_where].terr_own == -1:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, terytorium jest neutralne')
 
@@ -140,8 +139,6 @@ def dislocation(gam):
 
     else:
         attack(gam, to_where, units)
-
-    print(terr_objects[to_where].terr_own)
 
 
 def dislocation_force_getter(fr_where):
