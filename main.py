@@ -222,7 +222,7 @@ for i in range(0, players_count):           # adding players on the beginning
 
 print('Losowanie kolejki...\n')
 os.system('sleep 2')
-random.shuffle(gamer)
+# random.shuffle(gamer)
 
 
 # showing all players
