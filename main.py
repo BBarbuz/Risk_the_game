@@ -20,6 +20,14 @@ def show_terr():
     os.system('cat ./territores_names_num | column -c 100')
 
 
+def player_terr_list(gam):
+    terr_list = []
+    for j in terr_objects:
+        if j.get_terr_own() == gam.get_player_id():
+            terr_list.append(j.id_terr)
+    return terr_list
+
+
 def player_terr(gam):
     for j in terr_objects:
         if j.get_terr_own() == gam.get_player_id():
@@ -157,19 +165,38 @@ def dislocation_force_getter(fr_where):
 def recruitment(gam):
     if gam.recruit == 1:
         print('\nNie możesz się rekruować! Poczekaj jedną kolejkę.')
+        print('')
         move(gam)
     else:
         recruit_force = random.randrange(1, 6+1 + int(gam.get_player_level()))
         print(f'Zrekrutowałeś {recruit_force} jednostek, gdzie chcesz je ulokowac?')
         print('Twoje terytoria: ')
         player_terr(gam)
-        choice = input('Wybór: ')
-        choice = choice.strip().split(' ')
+
+        while True:
+
+            choice = input('Wybór: ')
+            choice = choice.strip().split(' ')
+
+            if recruit_helper(gam, choice) is True:
+                break
 
         if len(choice) > 1:
             for c in choice:
                 c = int(c)
-                unit = int(input(f'\nIle jednostek chcesz ulokować w {terr_names[c]} (dostępne {recruit_force}): '))
+
+                while True:
+                    try:
+                        unit = int(input(f'\nIle jednostek chcesz ulokować w '
+                                         f'{terr_names[c]} (dostępne {recruit_force}): '))
+                        print('')
+                        if 0 <= unit <= recruit_force:
+                            break
+                        print(f'Podaj liczbę z przedzału (0 - {recruit_force})')
+                    except ValueError:
+                        print('Wprowadzona liczba musi być liczbą całkowiką')
+                        print('')
+
                 terr_objects[c].set_force(unit)   # this function adding forces
                 recruit_force -= unit
         else:
@@ -179,13 +206,50 @@ def recruitment(gam):
             gam.recruit = 0
 
 
+def recruit_helper(gam, choice):
+    answer = True
+    try:
+        for ch in choice:
+            if answer is False:
+                break
+            for t in player_terr_list(gam):
+                if int(ch) is int(t):
+                    answer = True
+                    break
+                elif int(ch) is not int(t):
+                    answer = False
+
+        if answer is False:
+            if len(choice) is 1:
+                print('Wprowadzone terytorium nie należy do ciebie')
+            else:
+                print('Wprowadzone terytoria nie należą do ciebie')
+
+    except ValueError:
+        print('Wprowadzona liczba musi być liczbą całkowiką')
+        print('')
+        answer = False
+
+    return answer
+
+
 def move(gam):                # During working on the main loop this is main menu
     gam.view_player()
 
     print('1. Rekrutacja')
     print('2. Przemieszczanie wojsk / atak')
     print('3. Nic (utrata kolejki)')
-    choice = int(input(f'{gam.get_player_name()} wybierz numer:  '))
+
+    while True:
+        try:
+            choice = int(input(f'{gam.get_player_name()} wybierz numer:  '))
+            print('')
+            if 1 <= choice <= 3:
+                break
+            print('Podaj liczbę z przedzału (1 - 3)')
+        except ValueError:
+            print('Wprowadzona liczba musi być liczbą całkowiką')
+            print('')
 
     if choice == 1:
         recruitment(gam)
@@ -203,9 +267,17 @@ print('-' * 24)
 print('     RISK THE GAME       ')
 print('-' * 24, '\n')
 
-
-players_count = int(input('Ilu bedzie graczy: '))
-print('')
+players_count = -1
+while True:
+    try:
+        players_count = int(input('Ilu bedzie graczy: '))
+        print('')
+        if 1 < players_count <= 42:
+            break
+        print('Podaj liczbę z przedzału (2 - 42)')
+    except ValueError:
+        print('Wprowadzona liczba musi być liczbą całkowiką')
+        print('')
 
 """
 
@@ -221,7 +293,7 @@ for i in range(0, players_count):           # adding players on the beginning
     print('')
 
 print('Losowanie kolejki...\n')
-os.system('sleep 2')
+# os.system('sleep 2')
 # random.shuffle(gamer)
 
 
@@ -241,7 +313,7 @@ with open('territores_names', 'r') as f_terr:   # upload terr_names from file
         terr_names.append(line[:-1])
 
 print('\nGenerowanie mapy...\n')
-os.system('sleep 2')
+# os.system('sleep 2')
 show_terr()
 
 count_terr = len(terr_names)
@@ -261,7 +333,20 @@ for i in range(0, players_count):
 
     gamer[i].view_player()
 
-    num = int(input(f'{gamer[i].get_player_name()} wybierz pierwsze terytorium: '))
+    while True:
+        try:
+            num = int(input(f'{gamer[i].get_player_name()} wybierz pierwsze terytorium: '))
+            print('')
+            if terr_objects[num].terr_own == -1:
+                if 0 <= num <= 41:
+                    break
+                print('Podaj liczbę z przedzału (0 - 41)')
+                continue
+            print('Terytorium należy już do innego gracza!')
+
+        except ValueError:
+            print('Wprowadzona liczba musi być liczbą całkowiką')
+            print('')
 
     terr_objects[num].set_force(5)
     terr_objects[num].set_terr_own(gamer[i].get_player_id())
