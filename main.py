@@ -17,7 +17,7 @@ def is_alive(gam):
 
 def show_terr():
     print('')
-    os.system('cat ./territores_names_num | column -c 100')
+    os.system('cat ./territores_in_game_num | column ')
 
 
 def player_terr_list(gam):
@@ -287,6 +287,20 @@ def move(gam):                # During working on the main loop this is main men
         gam.recruit += 1
 
 
+def building_map_helper(choice):
+    answer = True
+    try:
+        for co in choice:
+            if not 1 <= int(co) <= 6:
+                answer = False
+                print('Podaj liczbę z przedzału (1 - 6)')
+    except ValueError:
+        print('Wprowadzona liczba musi być liczbą całkowiką')
+        print('')
+        answer = False
+    return answer
+
+
 os.system('clear')
 print('-' * 24)
 print('     RISK THE GAME       ')
@@ -328,12 +342,64 @@ for i in range(0, players_count):
 
 """
 
+Building own map using only selected continents or play on whole world
+
+"""
+print('\n', '-' * 10, 'Wybór mapy', '-' * 10)
+print('1.Mapa całego śwata\n2.Mapa własna')
+while True:
+    try:
+        map_type = int(input('\nWybór: '))
+        print('')
+        if 1 <= map_type <= 2:
+            break
+        print('Podaj liczbę z przedzału (1 - 2)')
+    except ValueError:
+        print('Wprowadzona liczba musi być liczbą całkowiką')
+        print('')
+
+if map_type == 1:
+    with open('territores_files/territores_World', 'r') as r_terr:
+        with open('territores_in_game', 'w') as w_terr:
+            for line in r_terr:
+                w_terr.write(line)
+else:
+    print('\n', '-' * 6, 'Stwórz własną mapę gry!', '-' * 6)
+    print('Kontynenty możesz łączyć wpisując po spacji ich numery\n')
+    print('1.North America\n2.South America\n3.Europe\n4.Africa\n5.Asia\n6.Australia')
+
+    while True:
+        continents = input('\nWybór: ')
+        continents = continents.strip().split(' ')
+
+        if building_map_helper(continents) is True:
+            break
+
+    with open('territores_in_game', 'w') as w_terr:
+        for continent in continents:
+            continent = int(continent)
+            for file in os.listdir('territores_files'):
+                if file.startswith(f'{continent}') is True:
+                    with open(f'territores_files/{file}', 'r') as r_terr:
+                        for line in r_terr:
+                            w_terr.write(line)
+            w_terr.write('\n')
+
+    with open('territores_in_game', 'r') as r_terr:
+        with open('territores_in_game_num', 'w') as w_terr:
+            number = 0
+            for line in r_terr:
+                w_terr.write(str(number) + '. ' + line)
+                number += 1
+
+"""
+
 Upload name of each territory from territories_names file.
 Create terr_names list with these names.
 
 """
 terr_names = []
-with open('territores_names', 'r') as f_terr:   # upload terr_names from file
+with open('territores_in_game', 'r') as f_terr:   # upload terr_names from file
     for line in f_terr:
         terr_names.append(line[:-1])
 
