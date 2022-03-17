@@ -84,11 +84,11 @@ def attack(gam, to_where, units):
         os.system('sleep 1')
 
     if units > defender_units:
-        print(f'\n{attacker_name} wygrałeś i zająłeś {terr_objects[to_where].name_terr}, masz tam {units} jednostek')
+        print(f'\n\n{attacker_name} wygrałeś i zająłeś {terr_objects[to_where].name_terr}, masz tam {units} jednostek')
         terr_objects[to_where].terr_own = gam.get_player_id()
         terr_objects[to_where].force = units
     else:
-        print(f'\n{attacker_name} przegrałeś i {terr_objects[to_where].name_terr} nadal należy do {defender_name} '
+        print(f'\n\n{attacker_name} przegrałeś i {terr_objects[to_where].name_terr} nadal należy do {defender_name} '
               f'posiada tam {defender_units} jednostek')
         terr_objects[to_where].force = defender_units
 
@@ -104,10 +104,28 @@ def dislocation(gam):
     od = 'n'
     while od == 'n' or od == 'N':
         units = 0
-        from_where = input('\nSkąd chcesz przejść: ')
-        from_where_check = from_where.strip().split(' ')
 
-        to_where = int(input('\nGdzie idziesz: '))
+        while True:
+
+            from_where = input('\nSkąd chcesz przejść: ')
+            from_where_check = from_where.strip().split(' ')
+
+            if recruit_helper(gam, from_where_check) is True:
+                break
+
+        while True:
+            try:
+                to_where = int(input('\nGdzie idziesz: '))
+                print('')
+                if not 0 <= to_where <= 41:
+                    print('Podaj liczbę z przedzału (0 - 41)')
+                    continue
+                break
+
+            except ValueError:
+                print('Wprowadzona liczba musi być liczbą całkowiką')
+                print('')
+
         if terr_objects[to_where].terr_own == -1:
             print(f'Wybierasz {terr_objects[to_where].name_terr}, terytorium jest neutralne')
 
@@ -143,17 +161,24 @@ def dislocation(gam):
         terr_objects[to_where].terr_own = gam.get_player_id()
 
     elif terr_objects[to_where].terr_own == gam.get_player_id():    # gamer territory, force relocation
-        terr_objects[to_where].force = units
+        terr_objects[to_where].force += units
 
     else:
         attack(gam, to_where, units)
 
 
 def dislocation_force_getter(fr_where):
-    units = 20
-    while units > terr_objects[fr_where].force:
-        units = int(input(f'\nIle jednostek chcesz użyć z {terr_objects[fr_where].name_terr}'
-                          f' (dostępnych {terr_objects[fr_where].force}): '))
+    while True:
+        try:
+            units = int(input(f'\nIle jednostek chcesz użyć z {terr_objects[fr_where].name_terr}'
+                              f' (dostępnych {terr_objects[fr_where].force}): '))
+            print('')
+            if 0 <= units <= terr_objects[fr_where].force:
+                break
+            print(f'Podaj liczbę z przedzału (0 - {terr_objects[fr_where].force})')
+        except ValueError:
+            print('Wprowadzona liczba musi być liczbą całkowiką')
+            print('')
 
     terr_objects[fr_where].force -= units
     if terr_objects[fr_where].force == 0:
@@ -337,12 +362,14 @@ for i in range(0, players_count):
         try:
             num = int(input(f'{gamer[i].get_player_name()} wybierz pierwsze terytorium: '))
             print('')
-            if terr_objects[num].terr_own == -1:
-                if 0 <= num <= 41:
-                    break
+            if not 0 <= num <= 41:
                 print('Podaj liczbę z przedzału (0 - 41)')
                 continue
-            print('Terytorium należy już do innego gracza!')
+            elif not terr_objects[num].terr_own == -1:
+                print('Terytorium należy już do innego gracza!')
+                continue
+
+            break
 
         except ValueError:
             print('Wprowadzona liczba musi być liczbą całkowiką')
