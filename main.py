@@ -117,8 +117,8 @@ def dislocation(gam):
             try:
                 to_where = int(input('\nGdzie idziesz: '))
                 print('')
-                if not 0 <= to_where <= 41:
-                    print('Podaj liczbę z przedzału (0 - 41)')
+                if not 0 <= to_where <= len(terr_objects)-1:
+                    print(f'Podaj liczbę z przedzału (0 - {len(terr_objects)-1})')
                     continue
                 break
 
@@ -332,7 +332,7 @@ for i in range(0, players_count):           # adding players on the beginning
     print('')
 
 print('Losowanie kolejki...\n')
-# os.system('sleep 2')
+os.system('sleep 2')
 # random.shuffle(gamer)
 
 
@@ -385,12 +385,12 @@ else:
                             w_terr.write(line)
             w_terr.write('\n')
 
-    with open('territores_in_game', 'r') as r_terr:
-        with open('territores_in_game_num', 'w') as w_terr:
-            number = 0
-            for line in r_terr:
-                w_terr.write(str(number) + '. ' + line)
-                number += 1
+with open('territores_in_game', 'r') as r_terr:
+    with open('territores_in_game_num', 'w') as w_terr:
+        number = 0
+        for line in r_terr:
+            w_terr.write(str(number) + '. ' + line)
+            number += 1
 
 """
 
@@ -404,7 +404,7 @@ with open('territores_in_game', 'r') as f_terr:   # upload terr_names from file
         terr_names.append(line[:-1])
 
 print('\nGenerowanie mapy...\n')
-# os.system('sleep 2')
+os.system('sleep 2')
 show_terr()
 
 count_terr = len(terr_names)
@@ -428,8 +428,8 @@ for i in range(0, players_count):
         try:
             num = int(input(f'{gamer[i].get_player_name()} wybierz pierwsze terytorium: '))
             print('')
-            if not 0 <= num <= 41:
-                print('Podaj liczbę z przedzału (0 - 41)')
+            if not 0 <= num <= len(terr_objects)-1:
+                print(f'Podaj liczbę z przedzału (0 - {len(terr_objects)-1})')
                 continue
             elif not terr_objects[num].terr_own == -1:
                 print('Terytorium należy już do innego gracza!')
