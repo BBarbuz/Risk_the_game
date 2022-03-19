@@ -51,9 +51,9 @@ def player_terr_counter(gam):
 def player_level(terr_count):
     if terr_count < 5:
         return 0
-    elif 5 < terr_count < 8:
+    elif 5 <= terr_count < 8:
         return 1
-    elif 8 < terr_count < 12:
+    elif 8 <= terr_count < 12:
         return 2
     else:
         return 3
