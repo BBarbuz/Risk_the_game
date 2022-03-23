@@ -2,6 +2,7 @@ import player
 import territories
 import random
 import os
+from tkinter import *
 
 
 def is_alive(gam):
