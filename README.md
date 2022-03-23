@@ -2,6 +2,7 @@
 My own digital version of Hasbro's board game - Risk
 
 GAME IS UNDER DEVELOPMENT ENGLISH LANGUAGE WILL BE ADD SOON.
+GAME IS TESTED ON LINUX - UBUNTU 18.04, OTHETR OS SUPPORT SOON.
 
 The idea of this game (at this point) is to play it using this program and Hasbro's Risk game board at the same time. Board will help you and four friends visualize your moves and owned territores.
 
