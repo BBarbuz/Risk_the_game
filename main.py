@@ -2,7 +2,6 @@ import player
 import territories
 import random
 import os
-from tkinter import *
 
 
 def is_alive(gam):
@@ -14,6 +13,19 @@ def is_alive(gam):
         return False
     else:
         return True
+
+
+def only_one():
+    counter = 0
+    for g in gamer:
+        if is_alive(g) is True:
+            counter += 1
+
+    if counter is 1:
+        for g in gamer:
+            if is_alive(g) is True:
+                return g
+    return False
 
 
 def show_terr():
@@ -465,7 +477,20 @@ while True:
 
             print('\nTwoje terytoria: ')
             player_terr(gamer[i])
+
             input('\n\t<Kliknij Enter aby iść dalej>')
             os.system('clear')
 
+        last_one = only_one()
+        if last_one is not False:
+            print(f'''
+            
+            Congratulations! 
+            player {last_one.get_player_name()} win
+            WHOLE WORLD IS YOUR !!!
+                    ''')
+            break
+
+    if only_one() is not False:
+        break
     game_round += 1
