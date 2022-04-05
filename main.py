@@ -2,6 +2,7 @@ import player
 import territories
 import random
 import os
+import csv
 
 
 def is_alive(gam):
@@ -314,21 +315,33 @@ def building_map_helper(choice):
     return answer
 
 
+def lang(eng_text, lang_tag):
+    if lang_tag is 'en':
+        return eng_text
+    elif lang_tag is 'pl':
+        with open('languages.csv', 'r') as r_lang:
+            csv_reader = csv.reader(r_lang, delimiter='_')
+            for row in csv_reader:
+                if eng_text == row[0]:
+                    return row[1]           # every language translation has its own column eg. polish has column '1'
+
+
 os.system('clear')
 print('-' * 24)
 print('     RISK THE GAME       ')
 print('-' * 24, '\n')
 
 players_count = -1
+lang_set = 'pl'
 while True:
     try:
-        players_count = int(input('Ilu bedzie graczy: '))
+        players_count = int(input(lang('Count of players: ', lang_set)))
         print('')
         if 1 < players_count <= 42:
             break
-        print('Podaj liczbę z przedzału (2 - 42)')
+        print(lang('Give a number between (2 - 42)', lang_set))
     except ValueError:
-        print('Wprowadzona liczba musi być liczbą całkowiką')
+        print(lang('The number entered must be an integer', lang_set))
         print('')
 
 """
@@ -339,8 +352,8 @@ and recruitment ability.
 """
 gamer = []
 for i in range(0, players_count):           # adding players on the beginning
-    print(f'Gracz ID_{i}')
-    name = input('Imie gracza: ')
+    print(lang('Gamer', lang_set), f'ID_{i}')
+    name = input(lang('Gamer name: ', lang_set))
     gamer.append(player.Players(i, name, 1, 2))
     print('')
 

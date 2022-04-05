@@ -4,4 +4,5 @@ test
 .idea
 territores_in_game
 territores_in_game_num
-
+.gitignore.save
+.~lock.languages.csv#
