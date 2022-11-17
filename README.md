@@ -1,9 +1,6 @@
 # Risk_the_game
 My own digital version of Hasbro's board game - Risk
 
-GAME IS UNDER DEVELOPMENT ENGLISH LANGUAGE WILL BE ADD SOON.
-GAME IS TESTED ON LINUX - UBUNTU 18.04, OTHETR OS SUPPORT SOON.
-
 The idea of this game (at this point) is to play it using this program and Hasbro's Risk game board at the same time. Board will help you and four friends visualize your moves and owned territores.
 
 Recommend to:
@@ -14,7 +11,7 @@ Implemeted feautures:
 - choosing own version (size) of map, or play on whole world,
 - choosing start territory,
 - rounds when players can recruit, move/attack, or wait,
-- recruit system, depending on playeer's level,
+- recruit system, depending on player's level,
 - move and attack system which allows to attack from many territories at the same time,
 - simple battle mechanics
 - player level depending on player's owned territores
